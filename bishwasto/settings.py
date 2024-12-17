@@ -43,18 +43,19 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'accounts',
     'subscriptions',
+    'shops',
     'products',
     'sales',
     'purchases',
-    # 'reports',
-    # 'settings',
+    'reports',
+    'settings',
     'suppliers',
     'customers',
-    # 'employees',
-    # 'expenses',
-    # 'incomes',
-    # 'stock',
-    # 'dashboard',
+    'employees',
+    'expenses',
+    'incomes',
+    'stock',
+    'dashboard',
 ]
 
 # Third-party apps
@@ -150,3 +151,41 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # password reset email console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# CACHE_TTL_SHORT = 300    # 5 minutes
+# CACHE_TTL_MEDIUM = 3600  # 1 hour
+# CACHE_TTL_LONG = 86400   # 1 day
+
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',
+#         'TIMEOUT': 3600,  # Default cache timeout
+#         'OPTIONS': {
+#             'MAX_ENTRIES': 1000
+#         }
+#     }
+# }
+
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': 'inventory.log',
+#         },
+#     },
+#     'loggers': {
+#         'inventory': {
+#             'handlers': ['file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#     },
+# }
