@@ -1,284 +1,379 @@
 {% extends "base/_base.html" %}
 {% load static %}
+{% load widget_tweaks %}
+
 
 {% block title %}Dashboard{% endblock %}
 
+
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
+
+
+
+<div class="container mt-3">
+
+    <div class="wrapper">
         <!-- Sidebar -->
-        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark position-fixed h-100">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                <a href="/" class="d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none">
-                    <span class="fs-5 fw-bolder d-none d-sm-inline">Marketplace + POS</span>
-                </a>
-                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100" id="menu">
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link active px-0 align-middle">
-                            <i class="bi bi-speedometer2 me-2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link px-0 align-middle text-white">
-                            <i class="bi bi-shop me-2"></i> <span class="ms-1 d-none d-sm-inline">POS</span>
-                        </a>
-                    </li>
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link px-0 align-middle text-white">
-                            <i class="bi bi-cart3 me-2"></i> <span class="ms-1 d-none d-sm-inline">Orders</span>
-                        </a>
-                    </li>
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link px-0 align-middle text-white">
-                            <i class="bi bi-box-seam me-2"></i> <span class="ms-1 d-none d-sm-inline">Products</span>
-                        </a>
-                    </li>
-                    <li class="nav-item w-100">
-                        <a href="#" class="nav-link px-0 align-middle text-white">
-                            <i class="bi bi-people me-2"></i> <span class="ms-1 d-none d-sm-inline">Vendors</span>
-                        </a>
-                    </li>
-                </ul>
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Dashboard</h2>
             </div>
-        </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+                    href="{% url 'dashboard' %}">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'myshop_list' %}active{% endif %}" 
+                    href="{% url "myshop_list" %}">
+                        <i class="bi bi-shop"></i>
+                        <span>Shops</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " 
+                    href="">
+                        <i class="bi bi-cash"></i>
+                        <span>Salaries</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Employee</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-cart me-2"></i>
+                        POS
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-box me-2"></i>
+                        Products
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-people me-2"></i>
+                        Customers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-credit-card me-2"></i>
+                        Subscriptions
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-calendar"></i>
+                        <span>Events</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-info-circle"></i>
+                        <span>About</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-gear"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
         <!-- Main Content -->
-        <div class="col-md-9 col-xl-10 ms-auto px-4 py-4">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3">Dashboard Overview</h1>
-                <div class="d-flex gap-2">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-calendar3"></i> Last 30 Days
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Today</a></li>
-                            <li><a class="dropdown-item" href="#">Last 7 Days</a></li>
-                            <li><a class="dropdown-item" href="#">Last 30 Days</a></li>
-                            <li><a class="dropdown-item" href="#">This Month</a></li>
-                            <li><a class="dropdown-item" href="#">Custom Range</a></li>
-                        </ul>
-                    </div>
-                    <button class="btn btn-primary">
-                        <i class="bi bi-download me-2"></i>Export Report
+        <div class="main-content">
+            <header class="dashboard-header">
+                <h1>Welcome to The Accounts Dashboard</h1>
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-logout fw-bold">
+                        <i class="bi bi-box-arrow-right"></i> Logout
                     </button>
-                </div>
-            </div>
+                </form>
+                {% endif %}
+            </header>
 
-            <!-- Stats Cards -->
-            <div class="row g-4 mb-4">
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                                    <i class="bi bi-currency-dollar text-primary fs-4"></i>
-                                </div>
-                                <span class="badge bg-success">+12.5%</span>
-                            </div>
-                            <h6 class="text-muted mb-1">Total Revenue</h6>
-                            <h3 class="mb-0">${{ total_revenue|default:"45,678" }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="rounded-circle bg-success bg-opacity-10 p-3">
-                                    <i class="bi bi-bag-check text-success fs-4"></i>
-                                </div>
-                                <span class="badge bg-success">+8.3%</span>
-                            </div>
-                            <h6 class="text-muted mb-1">Total Orders</h6>
-                            <h3 class="mb-0">{{ total_orders|default:"1,234" }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-                                    <i class="bi bi-shop-window text-warning fs-4"></i>
-                                </div>
-                                <span class="badge bg-success">+5.2%</span>
-                            </div>
-                            <h6 class="text-muted mb-1">Active Vendors</h6>
-                            <h3 class="mb-0">{{ active_vendors|default:"89" }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <div class="rounded-circle bg-info bg-opacity-10 p-3">
-                                    <i class="bi bi-people text-info fs-4"></i>
-                                </div>
-                                <span class="badge bg-success">+15.7%</span>
-                            </div>
-                            <h6 class="text-muted mb-1">Total Customers</h6>
-                            <h3 class="mb-0">{{ total_customers|default:"5,678" }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="content-wrapper p-0">
+                {% block db_content %}
+                
+                {% endblock %}
 
-            <!-- Charts Row -->
-            <div class="row g-4 mb-4">
-                <div class="col-12 col-xl-8">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-0 py-3">
-                            <h5 class="card-title mb-0">Revenue Overview</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="revenueChart" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-xl-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-0 py-3">
-                            <h5 class="card-title mb-0">Sales Distribution</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="salesDistribution" height="300"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <!-- Main Content -->
+                <main class="col">
 
-            <!-- Recent Orders & Top Vendors -->
-            <div class="row g-4">
-                <div class="col-12 col-xl-8">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-0 py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Recent Orders</h5>
-                                <a href="#" class="btn btn-sm btn-primary">View All</a>
+                    <!-- Stats Cards -->
+                    <div class="row g-3 mb-2">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Today's Sales</h5>
+                                    <h3 class="card-text">৳1,250</h3>
+                                    <p class="text-success"><i class="bi bi-arrow-up"></i> 3.5%</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-body p-0">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Active Subscriptions</h5>
+                                    <h3 class="card-text">125</h3>
+                                    <p class="text-primary">Premium: 85</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Products</h5>
+                                    <h3 class="card-text">1,840</h3>
+                                    <p class="text-info">Active: 1,520</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Low Stock Alert</h5>
+                                    <h3 class="card-text">24</h3>
+                                    <p class="text-danger">Critical: 8</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="row mb-4">
+                        <div class="col-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    Sales Overview
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="salesChart" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Top Products
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="productsChart" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions Table -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            Recent Transactions
+                        </div>
+                        <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="bg-light">
+                                <table class="table table-striped">
+                                    <thead>
                                         <tr>
                                             <th>Order ID</th>
                                             <th>Customer</th>
-                                            <th>Vendor</th>
+                                            <th>Products</th>
                                             <th>Amount</th>
                                             <th>Status</th>
-                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for order in recent_orders|default:"" %}
                                         <tr>
-                                            <td>#{{ order.id|default:"ORD-2345" }}</td>
-                                            <td>{{ order.customer|default:"John Doe" }}</td>
-                                            <td>{{ order.vendor|default:"Store Name" }}</td>
-                                            <td>${{ order.amount|default:"123.45" }}</td>
-                                            <td>
-                                                <span class="badge bg-success">Completed</span>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary">Details</button>
-                                            </td>
+                                            <td>#ORD-2024</td>
+                                            <td>John Doe</td>
+                                            <td>3 items</td>
+                                            <td>৳145.00</td>
+                                            <td><span class="badge bg-success">Completed</span></td>
                                         </tr>
-                                        {% endfor %}
+                                        <tr>
+                                            <td>#ORD-2023</td>
+                                            <td>Jane Smith</td>
+                                            <td>1 item</td>
+                                            <td>৳75.00</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 col-xl-4">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white border-0 py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0">Top Vendors</h5>
-                                <a href="#" class="btn btn-sm btn-primary">View All</a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                {% for vendor in top_vendors|default:"" %}
-                                <div class="list-group-item px-0">
-                                    <div class="d-flex align-items-center">
-                                        <img src="{% static 'img/vendor-placeholder.jpg' %}" class="rounded-circle me-3" width="40" height="40">
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-0">{{ vendor.name|default:"Vendor Name" }}</h6>
-                                            <small class="text-muted">{{ vendor.products|default:"45" }} Products</small>
-                                        </div>
-                                        <div class="text-end">
-                                            <h6 class="mb-0">${{ vendor.revenue|default:"12,345" }}</h6>
-                                            <small class="text-success">+{{ vendor.growth|default:"8.3" }}%</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
+
+
+    <style>
+    :root {
+        --sidebar-width: 250px;
+        --primary-color: #2c3e50;
+        --accent-color: #04AA6D;
+        --hover-color: #16a085;
+        --text-color: #ecf0f1;
+        --transition-speed: 0.3s;
+    }
+
+    .wrapper {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: var(--sidebar-width);
+        background: var(--primary-color);
+        color: var(--text-color);
+        transition: all var(--transition-speed);
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+        padding: 1.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar .nav-item {
+        margin: 0.5rem 0;
+    }
+
+    .sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        color: var(--text-color);
+        transition: all var(--transition-speed);
+    }
+
+    .sidebar .nav-link i {
+        width: 20px;
+        margin-right: 10px;
+    }
+
+    .sidebar .nav-link:hover {
+        background-color: var(--hover-color);
+        transform: translateX(5px);
+    }
+
+    .sidebar .nav-link.active {
+        background-color: var(--accent-color);
+        font-weight: bold;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        background: #f8f9fa;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #eee;
+    }
+
+    .btn-logout {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 5px;
+        transition: background-color var(--transition-speed);
+    }
+
+    .btn-logout:hover {
+        background-color: #c0392b;
+    }
+
+    .content-wrapper {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    </style>
+
 </div>
 
+
+{% endblock %}
+
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    // Revenue Chart
-    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(revenueCtx, {
+// Initialize Charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Sales Chart
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    new Chart(salesCtx, {
         type: 'line',
         data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
             datasets: [{
-                label: 'Revenue',
-                data: [12000, 19000, 15000, 25000, 22000, 30000],
-                borderColor: '#0d6efd',
-                tension: 0.4,
-                fill: true,
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                label: 'Sales',
+                data: [1200, 1900, 1500, 2100, 1800, 2500],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+            maintainAspectRatio: false
         }
     });
 
-    // Sales Distribution Chart
-    const salesCtx = document.getElementById('salesDistribution').getContext('2d');
-    new Chart(salesCtx, {
+    // Products Chart
+    const productsCtx = document.getElementById('productsChart').getContext('2d');
+    new Chart(productsCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Online', 'POS', 'Marketplace'],
+            labels: ['Electronics', 'Clothing', 'Food', 'Books'],
             datasets: [{
-                data: [45, 30, 25],
-                backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
+                data: [30, 25, 25, 20],
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)'
+                ]
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
+            maintainAspectRatio: false
         }
     });
+});
+
+// Shop Selector Event Handler
+document.getElementById('shopSelector').addEventListener('change', function(e) {
+    // Handle shop change - update dashboard data
+    console.log('Selected shop:', e.target.value);
+    // Add your shop-specific data update logic here
+});
 </script>
+
+
+
 {% endblock %}

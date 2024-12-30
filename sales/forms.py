@@ -1,12 +1,13 @@
 from django import forms
-from .models import Sales, SalesItems
+from .models import *
 
 class SalesForm(forms.ModelForm):
     class Meta:
         model = Sales
-        fields = ['customer', 'employee', 'payment_method', 'notes']
+        fields = ['customer', 'payment_method', 'sub_total', 'grand_total', 'amount_payed', 'amount_change', 'notes']
+
 
 class SalesItemsForm(forms.ModelForm):
     class Meta:
         model = SalesItems
-        fields = ['product', 'quantity', 'discount_in_percentage']
+        fields = ['product', 'sale_price', 'profit_in_percentage', 'discount_in_percentage', 'quantity']

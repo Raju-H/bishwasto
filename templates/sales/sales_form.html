@@ -1,4 +1,4 @@
-<!-- create_sale.html -->
+<!-- sales_form.html -->
 {% extends "base/_base.html" %}
 {% load static %}
 {% load widget_tweaks %}
@@ -6,7 +6,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-4">
     <!--Go back-->
     <div class="row ml-0 mb-2">
         <a href="{% url 'sales_list' %}">
@@ -20,7 +20,7 @@
 
     <!--Sale products and details-->
     <!-- Form -->
-    <form action="" class="saleForm" method="post">
+    <form action="{% url "sales_create" %}" class="saleForm" method="post">
         <div class="row mt-3">
             <div class="card col-md-12">
                 <div class="card-body ml-0">
@@ -50,26 +50,23 @@
                                     </div>
                                     <!--End Search product-->
 
-                                    <!--Delete all products from sale-->
-                                    <button type="button" class="my-3 btn btn-danger btn-sm deleteAll">
-                                        Delete all products <i class="ml-1 fas fa-trash-alt fa-xs"></i>
-                                    </button>
-                                    <!--End Delete all products from sale-->
 
                                     <!--Products table-->
-                                    <div class="card-body table-responsive p-0">
-                                        <table class="table table-hover text-nowrap" id="table_products">
+                                    <div class="card-body table-responsive mt-3 px-0">
+                                        <table class="table table-hover" id="table_products">
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Name</th>
                                                     <th>Price</th>
                                                     <th>Quantity</th>
+                                                    <th>Discount %</th>
+                                                    <th>Profit %</th>
                                                     <th>Total</th>
                                                     <th class="text-center">Delete</th>
                                                     </tr>
                                                 </thead>
-                                            <tbody>
+                                            <tbody id="products-tbody">
                                             </tbody>
                                         </table>
                                     </div>
@@ -221,18 +218,154 @@
 
 
 {% block extra_js %}
+
+
+
+
 <script>
     $(document).ready(function() {
+        let productCount = 0; // To keep track of product rows
+    
+        // Function to round numbers to a specified number of decimal places
+        function roundTo(n, digits = 2) {
+            const multiplicator = Math.pow(10, digits);
+            return Math.round(parseFloat((n * multiplicator).toFixed(11))) / multiplicator;
+        }
+    
+        // Function to add or update a product in the table
+        function addProductToTable(product) {
+            const existingRow = $(`#products-tbody tr[data-id="${product.id}"]`);
+            
+            if (existingRow.length > 0) {
+                // Product already exists, update the quantity
+                const quantityInput = existingRow.find('.quantity');
+                const currentQuantity = parseInt(quantityInput.val());
+                quantityInput.val(currentQuantity + 1); // Increment quantity by 1
+            } else {
+                // Product does not exist, create a new row
+                productCount++;
+                const row = `
+                    <tr id="product-row-${productCount}" data-id="${product.id}" data-buying-price="${parseFloat(product.buying_price)}">
+                        <td>${productCount}</td>
+                        <td>${product.name}</td>
+                        <td class="unit-price">${parseFloat(product.retail_price).toFixed(2)}</td>
+                        <td><input type="number" class="form-control quantity" value="1" min="1" data-price="${parseFloat(product.retail_price)}" data-id="${product.id}"></td>
+                        <td><input type="number" class="form-control discount-percentage" value="0" min="0" max="100"></td>
+                        <td><input type="number" class="form-control profit-percentage" value="0" min="0" max="100"></td>
+                        <td class="total-price">${parseFloat(product.retail_price).toFixed(2)}</td>
+                        <td class="text-center"><button type="button" class="btn btn-danger delete-product" data-id="${product.id}"><i class="bi bi-trash3-fill"></i></button></td>
+                    </tr>`;
+                $('#products-tbody').append(row);
+            }
+            
+            updateTotal(); // Update total after adding/updating the product
+        }
+    
+            // Function to update total prices
+            function updateTotal() {
+                let subtotal = 0;
+                let totalTax = 0;
+            
+                $('#products-tbody tr').each(function () {
+                    const quantity = parseInt($(this).find('.quantity').val());
+                    const retailPrice = parseFloat($(this).find('.unit-price').text());
+                    const buyingPrice = parseFloat($(this).data('buying-price')) || 0;
+                    const discountPercentage = parseFloat($(this).find('.discount-percentage').val()) || 0;
+                    const profitPercentage = parseFloat($(this).find('.profit-percentage').val()) || 0;
+                    const defaultTaxRate = parseFloat($(this).data('default-tax-rate')) || 0;
+            
+                    // Default to retail price
+                    let salePrice = retailPrice;
+            
+                    // Override sale price if profit percentage is entered
+                    if (profitPercentage > 0) {
+                        salePrice = buyingPrice + (buyingPrice * (profitPercentage / 100));
+                    }
+            
+                    // Apply discount percentage
+                    if (discountPercentage > 0) {
+                        salePrice -= (salePrice * (discountPercentage / 100));
+                    }
+            
+                    // Calculate item subtotal
+                    const itemSubtotal = roundTo(quantity * salePrice, 2);
+                    subtotal += itemSubtotal;
+            
+                    // Calculate tax for this item
+                    let taxRate = defaultTaxRate > 0 ? defaultTaxRate : (parseFloat($('#id_tax_in_percentage').val()) || 0);
+                    if (taxRate > 0) {
+                        const itemTax = roundTo(itemSubtotal * (taxRate / 100), 2);
+                        totalTax += itemTax;
+                    }
+            
+                    // Update the row's total price
+                    $(this).find('.total-price').text(roundTo(itemSubtotal, 2).toFixed(2));
+                });
+            
+                // Update subtotal and grand total fields
+                $('#id_sub_total').val(roundTo(subtotal, 2).toFixed(2));
+                const grandTotal = roundTo(subtotal + totalTax, 2);
+                $('#id_grand_total').val(grandTotal.toFixed(2));
+            
+                updateAmountChange();
+            }
+            
+
+            // Attach change events to dynamically update totals
+            $(document).on('input change', '.quantity, .discount-percentage, .profit-percentage', function() {
+                updateTotal();
+            });
+
+            // Update amount change when the amount paid changes
+            $(document).on('input', '#id_amount_payed', function() {
+                updateAmountChange();
+            });
+
+
+        // Function to update amount change
+        function updateAmountChange() {
+            const grandTotal = parseFloat($('#id_grand_total').val()) || 0; // Get grand total
+            const amountPaid = parseFloat($('#id_amount_payed').val()) || 0; // Get amount paid
+            const amountChange = roundTo(amountPaid - grandTotal, 2); // Calculate amount change
+            $('#id_amount_change').val(amountChange.toFixed(2)); // Update amount change field
+        }
+
+    
+        $(document).on('change', '.quantity', function() {
+            updateTotal();
+        });
+    
+        $(document).on('click', '.delete-product', function() {
+            const rowId = $(this).closest('tr').attr('id');
+            $('#' + rowId).remove();
+            updateTotal();
+        });
+    
+        // Event handler for amount paid input
+        $(document).on('input', '#id_amount_payed', function() {
+            updateAmountChange(); // Call to update amount change when amount paid changes
+        });
+
+
+
+
+
+
+        
+    
         // Initialize Select2 for customer selection
-        $('#id_customer').select2();
-
+        $('#id_customer').select2({
+            placeholder: "Select a customer",
+            allowClear: true,
+        });
+    
         const csrftoken = $("input[name=csrfmiddlewaretoken]").val();
-
+    
         // Function to check if the HTTP method requires CSRF protection
         function csrfSafeMethod(method) {
             return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
         }
-
+    
         // Set up AJAX to include CSRF token for non-safe methods
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
@@ -241,7 +374,7 @@
                 }
             }
         });
-
+    
         // Initialize Select2 for product search with AJAX
         $('#searchbox_products').select2({
             delay: 250,
@@ -265,20 +398,20 @@
             }
         }).on('select2:select', function(e) {
             const data = e.params.data;
-            data.number = number++;
-            
-            //console.log("Sale items", sale.items);
+    
+            // Add selected product to the table or update quantity if it exists
+            addProductToTable(data);
             
             // Clear the search box after selection
             $(this).val('').trigger('change.select2');
         });
-
+    
         // Template for displaying product search results
         function templateProductSearchbox(result) {
             if (result.loading) {
                 return result.name; // Display loading message
             }
-
+    
             return $(
                 `<div class="wrapper container">
                     <div class="row">
@@ -293,8 +426,73 @@
                 </div>`
             );
         }
-    });
-</script>
 
+
+        // Send the Sales & SalesItems data via AJAX
+        $('.saleForm').on('submit', function(e) {
+            // Prevent default form submission
+            e.preventDefault();
+
+            // Check if there are any products in the table
+            const productRows = $('#products-tbody tr');
+            if (productRows.length === 0) {
+                alert("Error: Please add at least one product to the sale.");
+                return; // Stop form submission
+            }
+
+            // Gather data from the form and product table
+            const saleData = {
+                customer: $('#id_customer').val(),
+                payment_method: $('#id_payment_method').val(),
+                sub_total: $('#id_sub_total').val(),
+                grand_total: $('#id_grand_total').val(),
+                amount_payed: $('#id_amount_payed').val(),
+                amount_change: $('#id_amount_change').val(),
+                notes: $('#id_notes').val(),
+                items: [] // Array to hold sale items
+            };
+
+            // Loop through each product row and collect data
+            productRows.each(function() {
+                const row = $(this);
+                const productId = row.data('id');
+                const quantity = parseInt(row.find('.quantity').val()) || 0;
+                const buyingPrice = parseFloat($(this).data('buying-price')) || 0;
+                let retailPrice = parseFloat(row.find('.unit-price').text()) || 0;
+                const discountPercentage = parseFloat(row.find('.discount-percentage').val()) || 0;
+                const profitPercentage = parseFloat(row.find('.profit-percentage').val()) || 0;
+                const totalPrice = parseFloat(row.find('.total-price').text()) || 0;
+
+                // Override retail price if profit percentage is entered
+                if (profitPercentage > 0) {
+                    retailPrice = buyingPrice + (buyingPrice * (profitPercentage / 100));
+                }
+
+
+                // Add the collected data to saleData.items
+                saleData.items.push({
+                    product_id: productId,
+                    quantity: quantity,
+                    retail_price: retailPrice.toFixed(2),
+                    discount_percentage: discountPercentage.toFixed(2),
+                    profit_percentage: profitPercentage.toFixed(2),
+                    total_price: totalPrice.toFixed(2) // Already calculated dynamically
+                });
+            });
+
+            // Print collected data to the console
+            console.log("Sale Data:", saleData);
+        });
+
+        
+
+
+
+
+
+    });
+    </script>
+    
+    
 
 {% endblock %}

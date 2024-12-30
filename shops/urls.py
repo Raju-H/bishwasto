@@ -7,3 +7,7 @@ urlpatterns = [
     path('update/<uuid:pk>/', ShopUpdateView.as_view(), name='shop_update'),
     path('my/', MyShopsListView.as_view(), name='myshop_list'),
 ]
+
+urlpatterns += [
+    path('dashboard/', dashboard, name='dashboard'),
+]

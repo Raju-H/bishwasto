@@ -7,6 +7,7 @@ from django.db import transaction
 from django.core.files.storage import default_storage
 from django.db.models import Q
 from .models import *
+from django.shortcuts import render
 
 
 
@@ -207,3 +208,8 @@ class ShopListView(LoginRequiredMixin, ListView):
         })
 
         return context
+
+
+
+def dashboard(request):
+    return render(request, 'backend/dashboard.html')
