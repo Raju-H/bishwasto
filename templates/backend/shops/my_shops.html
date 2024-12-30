@@ -1,0 +1,281 @@
+{% extends "base/_base.html" %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="display-6 mb-0">My Shops</h2>
+            <p class="text-muted mt-2">Manage your shop portfolio</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a href="{% url 'shop_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Create New Shop
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Total Shops</h6>
+                    <h2 class="card-title mb-0">{{ shops.count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Active Shops</h6>
+                    <h2 class="card-title mb-0">{{ active_shops_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2">Total Employees</h6>
+                    <h2 class="card-title mb-0">{{ total_employees }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shops List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <form class="d-flex gap-2" method="get">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   placeholder="Search shops..." 
+                                   name="search" 
+                                   value="{{ search_query }}">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        {% if search_query %}
+                        <a href="{% url 'myshop_list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg"></i>
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" 
+                                type="button" 
+                                data-bs-toggle="dropdown">
+                            <i class="bi bi-funnel"></i> Filter
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="?status=active">Active Shops</a></li>
+                            <li><a class="dropdown-item" href="?status=inactive">Inactive Shops</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'myshop_list' %}">Show All</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            {% if shops %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="ps-3">Shop</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Employees</th>
+                            <th scope="col" class="text-end pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shop in shops %}
+                        <tr>
+                            <td class="ps-3">
+                                <div class="d-flex align-items-center">
+                                    {% if shop.shop_logo %}
+                                    <img src="{{ shop.shop_logo.url }}" 
+                                         alt="{{ shop.name }}" 
+                                         class="rounded-circle me-2" 
+                                         width="40" 
+                                         height="40">
+                                    {% else %}
+                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" 
+                                         style="width: 40px; height: 40px;">
+                                        <i class="bi bi-shop"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ shop.name }}</h6>
+                                        <small class="text-muted">{{ shop.address }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if shop.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {{ shop.employees.count }}
+                                    <button type="button" 
+                                            class="btn btn-link btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#employeesModal{{ shop.id }}">
+                                        <i class="bi bi-people"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="btn-group">
+                                    <a href="" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'shop_update' shop.pk %}" 
+                                       class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Employees Modal -->
+                        <div class="modal fade" id="employeesModal{{ shop.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{{ shop.name }} - Employees</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="list-group">
+                                            {% for employee in shop.employees.all %}
+                                            <div class="list-group-item">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="mb-0">{{ employee.get_username }}</h6>
+                                                        <small class="text-muted">{{ employee.email }}</small>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                            onclick="removeEmployee('{{ shop.id }}', '{{ employee.id }}')">
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            {% empty %}
+                                            <p class="text-muted mb-0">No employees found.</p>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <img src="{% static 'images/empty-shops.svg' %}" 
+                     alt="No shops" 
+                     class="mb-3" 
+                     style="max-width: 200px;">
+                <h4>No Shops Found</h4>
+                <p class="text-muted">
+                    {% if search_query %}
+                    No shops match your search criteria.
+                    {% else %}
+                    Start by creating your first shop!
+                    {% endif %}
+                </p>
+                <a href="{% url 'shop_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Create New Shop
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if is_paginated %}
+        <div class="card-footer bg-white">
+            <nav aria-label="Shop pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">First</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<style>
+    .card {
+        border: none;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+
+    .btn-group > .btn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+
+    .modal-footer {
+        border-top: 1px solid rgba(0,0,0,.1);
+    }
+
+</style>
+{% endblock %}

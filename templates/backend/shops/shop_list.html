@@ -1,0 +1,252 @@
+{% extends "base/_base.html" %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="display-6 mb-3">Shops Directory</h2>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <!-- condition check with permission // if perms.shops.add_shop -->
+            <!-- Add New Shop Button -->
+            <a href="{% url 'shop_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add New Shop
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters and Search Section -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-8">
+            <form method="get" class="d-flex gap-2">
+                <div class="input-group">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Search shops..." 
+                           value="{{ search_query }}"
+                           aria-label="Search shops">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+                {% if search_query %}
+                <a href="{% url 'shop_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex justify-content-md-end gap-2">
+                <div class="btn-group" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-secondary dropdown-toggle" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?status=active">Active Shops</a></li>
+                        <li><a class="dropdown-item" href="?status=inactive">Inactive Shops</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'shop_list' %}">Show All</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group" role="group">
+                    <button type="button" 
+                            class="btn btn-outline-secondary dropdown-toggle" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false">
+                        <i class="bi bi-sort-down"></i> Sort
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?sort_by=name">Name (A-Z)</a></li>
+                        <li><a class="dropdown-item" href="?sort_by=-name">Name (Z-A)</a></li>
+                        <li><a class="dropdown-item" href="?sort_by=created_at">Oldest First</a></li>
+                        <li><a class="dropdown-item" href="?sort_by=-created_at">Newest First</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shops Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        {% for shop in shops %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                {% if shop.shop_logo %}
+                <div class="card-img-top-wrapper">
+                    <img src="{{ shop.shop_logo.url }}" 
+                         class="card-img-top p-3" 
+                         alt="{{ shop.name }} logo">
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ shop.name }}</h5>
+                        {% if shop.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                    <p class="card-text">
+                        <i class="bi bi-geo-alt text-muted"></i> 
+                        {{ shop.address|default:"No address provided" }}
+                    </p>
+                    {% if shop.phone_number %}
+                    <p class="card-text">
+                        <i class="bi bi-telephone text-muted"></i> 
+                        {{ shop.phone_number }}
+                    </p>
+                    {% endif %}
+                    {% if shop.email %}
+                    <p class="card-text">
+                        <i class="bi bi-envelope text-muted"></i> 
+                        {{ shop.email }}
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            {% if request.user in shop.owner.all %}
+                            <a href="{% url 'shop_update' shop.pk %}" 
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% if shop.website %}
+                        <a href="{{ shop.website }}" 
+                           class="btn btn-sm btn-link" 
+                           target="_blank">
+                            <i class="bi bi-box-arrow-up-right"></i> Website
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i> 
+                No shops found. {% if search_query %}Try different search terms.{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Shop pagination">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                    Previous
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                        {{ num }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                    Next
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" 
+                   href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Add this to your base template's head section -->
+
+<style>
+    .card-img-top-wrapper {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+    }
+
+    .card-img-top {
+        max-height: 180px;
+        width: auto;
+        object-fit: contain;
+    }
+
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .badge {
+        font-size: 0.8rem;
+    }
+
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .search-form .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+
+    @media (max-width: 768px) {
+        .card-img-top-wrapper {
+            height: 150px;
+        }
+        
+        .card-img-top {
+            max-height: 130px;
+        }
+    }
+</style>
+{% endblock %}

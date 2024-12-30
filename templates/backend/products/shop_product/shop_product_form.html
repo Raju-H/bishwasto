@@ -1,0 +1,255 @@
+{% extends "base/_base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Form Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'shop_product_list' %}">Products</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </nav>
+            <h2 class="display-6 mb-3">{{ title }}</h2>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Basic Information Section -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3">Details Information</h5>
+                            <div class="row g-3">
+
+                                <!-- Shop -->
+                                <div class="mb-3">
+                                {{form.shop.label_tag}} {% if form.shop.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.shop class="form-select" %}
+                                    {% if form.shop.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.shop.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.shop.help_text %}
+                                        <div class="form-text">{{ form.shop.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Supplier -->
+                                <div class="mb-3">
+                                {{form.supplier.label_tag}} {% if form.supplier.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.supplier class="form-select" %}
+                                    {% if form.supplier.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.supplier.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.supplier.help_text %}
+                                        <div class="form-text">{{ form.supplier.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Product -->
+                                <div class="mb-3">
+                                {{form.product.label_tag}} {% if form.product.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.product class="form-select" %}
+                                    {% if form.product.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.product.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.product.help_text %}
+                                        <div class="form-text">{{ form.product.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Buying Price -->
+                                <div class="mb-3">
+                                {{form.buying_price.label_tag}} {% if form.buying_price.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.buying_price class="form-control" %}
+                                    {% if form.buying_price.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.buying_price.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.buying_price.help_text %}
+                                        <div class="form-text">{{ form.buying_price.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Wholesale Price -->
+                                <div class="mb-3">
+                                {{form.wholesale_price.label_tag}} {% if form.wholesale_price.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.wholesale_price class="form-control" %}
+                                    {% if form.wholesale_price.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.wholesale_price.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.wholesale_price.help_text %}
+                                        <div class="form-text">{{ form.wholesale_price.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Retail Price -->
+                                <div class="mb-3">
+                                {{form.retail_price.label_tag}} {% if form.retail_price.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.retail_price class="form-control" %}
+                                    {% if form.retail_price.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.retail_price.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.retail_price.help_text %}
+                                        <div class="form-text">{{ form.retail_price.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Stock Quantity -->
+                                <div class="mb-3">
+                                {{form.stock_quantity.label_tag}} {% if form.stock_quantity.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.stock_quantity class="form-control" %}
+                                    {% if form.stock_quantity.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.stock_quantity.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.stock_quantity.help_text %}
+                                        <div class="form-text">{{ form.stock_quantity.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Receivings Stock -->
+                                <div class="mb-3">
+                                {{form.receivings_stock.label_tag}} {% if form.receivings_stock.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.receivings_stock class="form-control" %}
+                                    {% if form.receivings_stock.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.receivings_stock.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.receivings_stock.help_text %}
+                                        <div class="form-text">{{ form.receivings_stock.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Sort Order -->
+                                <div class="mb-3">
+                                {{form.sort_order.label_tag}} {% if form.sort_order.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.sort_order class="form-control" %}
+                                    {% if form.sort_order.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.sort_order.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.sort_order.help_text %}
+                                        <div class="form-text">{{ form.sort_order.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Stock Warning Threshold -->
+                                <div class="mb-3">
+                                {{form.stock_warning_threshold.label_tag}} {% if form.stock_warning_threshold.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.stock_warning_threshold class="form-control" %}
+                                    {% if form.stock_warning_threshold.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.stock_warning_threshold.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.stock_warning_threshold.help_text %}
+                                        <div class="form-text">{{ form.stock_warning_threshold.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Default Tax Rate -->
+                                <div class="mb-3">
+                                {{form.default_tax_rate.label_tag}} {% if form.default_tax_rate.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.default_tax_rate class="form-control" %}
+                                    {% if form.default_tax_rate.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.default_tax_rate.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.default_tax_rate.help_text %}
+                                        <div class="form-text">{{ form.default_tax_rate.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Is Active -->
+                                <div class="mb-3">
+                                {{form.is_active.label_tag}} {% if form.is_active.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.is_active class="form-check-input" %}
+                                    {% if form.is_active.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.is_active.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.is_active.help_text %}
+                                        <div class="form-text">{{ form.is_active.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+    
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> {{ submit_text }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // Initialize Select2 for multiple select fields if available
+    $(document).ready(function() {
+        $('#id_category').select2();
+        $('#id_sub_category').select2();
+    });
+</script>
+{% endblock %}
+

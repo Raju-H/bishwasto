@@ -1,0 +1,300 @@
+<!-- create_sale.html -->
+{% extends "base/_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!--Go back-->
+    <div class="row ml-0 mb-2">
+        <a href="{% url 'sales_list' %}">
+            <button type="button" class="btn btn-info font-weight-bold">
+                <i class="fas fa-long-arrow-alt-left mr-2"></i>
+                Go back
+            </button>
+        </a>
+    </div>
+
+
+    <!--Sale products and details-->
+    <!-- Form -->
+    <form action="" class="saleForm" method="post">
+        <div class="row mt-3">
+            <div class="card col-md-12">
+                <div class="card-body ml-0">
+                    <div class="row">
+                        <!--Left column-->
+                        <div class="col-md-9 pl-0">
+                            <div class="card card-secondary">
+                                <div class="card-header">Sale products</div>
+
+                                <!-- Messages -->
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <div class="card-body">
+                                    <!--Search product-->
+                                    <div class="form-group">
+                                        <label>Search product:</label>
+                                        <div class="input-group">
+                                            <select class="form-control select2" name="searchbox_products" id="searchbox_products"></select>
+                                        </div>
+                                    </div>
+                                    <!--End Search product-->
+
+                                    <!--Delete all products from sale-->
+                                    <button type="button" class="my-3 btn btn-danger btn-sm deleteAll">
+                                        Delete all products <i class="ml-1 fas fa-trash-alt fa-xs"></i>
+                                    </button>
+                                    <!--End Delete all products from sale-->
+
+                                    <!--Products table-->
+                                    <div class="card-body table-responsive p-0">
+                                        <table class="table table-hover text-nowrap" id="table_products">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Name</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th class="text-center">Delete</th>
+                                                    </tr>
+                                                </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!--End Products table-->
+                                </div>
+                            </div>
+                        </div>
+                        <!--End Left column-->
+
+                        <!--Righ column-->
+                        <div class="col-md-3 pr-0">
+                            <div class="card card-secondary">
+                                <div class="card-header">Sale details</div>
+                                <div class="card-body">
+                                    {% csrf_token %}
+
+                                    <!-- Customer -->
+                                    <div class="mb-2">
+                                        {{form.customer.label_tag}} {% if form.customer.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        {% render_field form.customer class="form-select" placeholder=form.customer.label %}
+                                        {% if form.customer.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.customer.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.customer.help_text %}
+                                            <div class="form-text">{{ form.customer.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Payment Methood -->
+                                    <div class="mb-2">
+                                        {{form.payment_method.label_tag}} {% if form.payment_method.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        {% render_field form.payment_method class="form-select" placeholder=form.payment_method.label %}
+                                        {% if form.payment_method.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.payment_method.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.payment_method.help_text %}
+                                            <div class="form-text">{{ form.payment_method.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Sub Total -->
+                                    <div class="mb-2">
+                                        {{form.sub_total.label_tag}}
+                                        {% render_field form.sub_total class="form-control" readonly="readonly" %}
+                                        {% if form.sub_total.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.sub_total.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.sub_total.help_text %}
+                                            <div class="form-text">{{ form.sub_total.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Grand Total -->
+                                    <div class="mb-2">
+                                        {{form.grand_total.label_tag}}
+                                        {% render_field form.grand_total class="form-control" readonly="readonly" %}
+                                        {% if form.grand_total.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.grand_total.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.grand_total.help_text %}
+                                            <div class="form-text">{{ form.grand_total.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Amount Payed -->
+                                    <div class="mb-2">
+                                        {{form.amount_payed.label_tag}} {% if form.amount_payed.field.required %}<span class="text-danger">*</span>{% endif %}
+                                        {% render_field form.amount_payed class="form-control" placeholder=form.amount_payed.label %}
+                                        {% if form.amount_payed.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.amount_payed.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.amount_payed.help_text %}
+                                            <div class="form-text">{{ form.amount_payed.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Amount Change -->
+                                    <div class="mb-2">
+                                        {{form.amount_change.label_tag}}
+                                        {% render_field form.amount_change class="form-control" readonly="readonly" %}
+                                        {% if form.amount_change.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.amount_change.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.amount_change.help_text %}
+                                            <div class="form-text">{{ form.amount_change.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+
+                                    <!-- Notes -->
+                                    <div class="mb-2">
+                                        {{form.notes.label_tag}}
+                                        {% render_field form.notes class="form-control" placeholder=form.notes.label rows='2' %}
+                                        {% if form.notes.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                                {{ form.notes.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                        {% if form.notes.help_text %}
+                                            <div class="form-text">{{ form.notes.help_text }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mb-2 text-right float-end">
+                                        <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle"></i> {{ submit_text }}
+                                        </button>
+                                    </div>
+                                </div>
+                                <!--End card-body-->
+                        </div>
+                        <!--End Right column-->
+                    </div>
+                    <!--End row-->
+                </div>
+                <!--End card-body-->
+            </div>
+
+        </div>
+    </form>
+
+
+
+
+
+</div>
+{% endblock %}
+
+
+
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 for customer selection
+        $('#id_customer').select2();
+
+        const csrftoken = $("input[name=csrfmiddlewaretoken]").val();
+
+        // Function to check if the HTTP method requires CSRF protection
+        function csrfSafeMethod(method) {
+            return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+        }
+
+        // Set up AJAX to include CSRF token for non-safe methods
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        // Initialize Select2 for product search with AJAX
+        $('#searchbox_products').select2({
+            delay: 250,
+            placeholder: 'Search a product',
+            minimumInputLength: 1,
+            allowClear: true,
+            templateResult: templateProductSearchbox,
+            ajax: { 
+                url: "{% url 'get_shops_product' %}",
+                type: 'POST',
+                data: function(params) {
+                    return {
+                        term: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data
+                    };
+                }
+            }
+        }).on('select2:select', function(e) {
+            const data = e.params.data;
+            data.number = number++;
+            
+            //console.log("Sale items", sale.items);
+            
+            // Clear the search box after selection
+            $(this).val('').trigger('change.select2');
+        });
+
+        // Template for displaying product search results
+        function templateProductSearchbox(result) {
+            if (result.loading) {
+                return result.name; // Display loading message
+            }
+
+            return $(
+                `<div class="wrapper container">
+                    <div class="row">
+                        <div class="col-lg-11 text-left shadow-sm">
+                            <p style="margin-bottom: 5px;">
+                                <b>Name:</b> ${result.name} | 
+                                <b>Buying Price:</b> <span class='btn-info px-2'>${result.buying_price}৳</span> | 
+                                <b>Retail Price:</b> <span class="btn-success px-2">${result.retail_price}৳</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>`
+            );
+        }
+    });
+</script>
+
+
+{% endblock %}

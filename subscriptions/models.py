@@ -1,101 +1,63 @@
-from django.db import models, transaction
-from django.core.cache import cache
-from django.utils import timezone
+from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
-from functools import lru_cache
 from accounts.models import BaseModel
-# from shops.models import Shop
-from django.core.exceptions import ValidationError
+from decimal import Decimal
 
 
 
-class ActiveSubscriptionManager(models.Manager):
-    def get_queryset(self):
-        """Return only active subscriptions with optimized query."""
-        today = timezone.now().date()
-        return (super()
-               .get_queryset()
-               .filter(start_date__lte=today, end_date__gte=today)
-               .select_related('shop', 'subscription')
-               .only('id', 'start_date', 'end_date', 
-                    'shop__name', 'subscription__name'))
 
-    def validate_dates(self, start_date, end_date):
-        """Validate subscription dates."""
-        if not isinstance(start_date, (timezone.datetime, timezone.datetime.date)):
-            raise ValueError("Invalid start date format")
-        if not isinstance(end_date, (timezone.datetime, timezone.datetime.date)):
-            raise ValueError("Invalid end date format")
-        if end_date <= start_date:
-            raise ValueError("End date must be after start date")
+class SubscriptionPlan(BaseModel):
 
-    def check_overlapping(self, shop_id, start_date, end_date):
-        """Check for overlapping subscriptions with caching."""
-        cache_key = f'overlap_sub_{shop_id}_{start_date}_{end_date}'
-        result = cache.get(cache_key)
-        
-        if result is None:
-            result = self.filter(
-                shop_id=shop_id,
-                start_date__lt=end_date,
-                end_date__gt=start_date
-            ).exists()
-            cache.set(cache_key, timeout=settings.CACHE_TTL_MEDIUM)
-        return result
-
-
-class Subscription(BaseModel):
-    STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('active', 'Active'), 
-        ('expired', 'Expired'),
-        ('failed', 'Failed'),
+    name = models.CharField(
+        max_length=100, 
+        db_index=True,
+        help_text="Name of the subscription plan"
     )
 
-    name = models.CharField(max_length=100, db_index=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(
+        blank=True,
+        help_text="Detailed description of the subscription plan"
+    )
+
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        validators=[MinValueValidator(0)],
-        db_index=True
+        validators=[MinValueValidator(Decimal('0.00'))],
+        db_index=True,
+        help_text="Monthly price of the subscription plan"
     )
+
     duration_months = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(60)
-        ]
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_CHOICES,
-        default='pending',
-        db_index=True
+        ],
+        help_text=(
+            "Duration of subscription plan in months & Max value is 60 months (5 years)"
+        )
     )
 
-    objects = models.Manager()
-    active = ActiveSubscriptionManager()
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='subscriptionplan_created_by',
+        null=True
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Whether the subscription plan is currently active"
+    )
 
     class Meta:
-        indexes = [
-            models.Index(fields=['price', 'status']),
-            models.Index(fields=['status', 'duration_months']),
-        ]
-        ordering = ['price']
+        verbose_name = 'Subscription Plan'
+        verbose_name_plural = 'Subscription Plans'
 
-    def __str__(self):
-        return f"{self.name} ({self.get_status_display()})"
+    def __str__(self) -> str:
+        return f"{self.name} - {self.duration_months} - {self.price}"
 
-    @lru_cache(maxsize=128)
-    def get_total_price(self):
-        """Calculate total price with caching."""
-        return self.price * self.duration_months
 
-    def clean(self):
-        super().clean()
-        if self.price < 0:
-            raise ValidationError("Price cannot be negative")
+
 
 
 # class ShopSubscriptionPlan(BaseModel):
@@ -111,7 +73,13 @@ class Subscription(BaseModel):
 #     )
 #     start_date = models.DateField()
 #     end_date = models.DateField()
-    
+#     creatd_by = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.SET_NULL,
+#         related_name='shop_subscriptionsplan_created',
+#         null=True
+#     )
+
 #     objects = models.Manager()
 #     active = ActiveSubscriptionManager()
 

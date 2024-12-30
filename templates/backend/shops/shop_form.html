@@ -1,0 +1,217 @@
+{% extends "base/_base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Form Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'shop_list' %}">Shops</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </nav>
+            <h2 class="display-6 mb-3">{{ title }}</h2>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="post" enctype="multipart/form-data" class="shop-form needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Basic Information Section -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3">Basic Information</h5>
+                            <div class="row g-3">
+                                <!-- Shop Name -->
+                                <div class="col-md-6">
+                                {{form.name.label_tag}} {% if form.name.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.name class="form-control" placeholder=form.name.label %}
+                                    {% if form.name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.name.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.name.help_text %}
+                                        <div class="form-text">{{ form.name.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Phone Number -->
+                                <div class="col-md-6">
+                                    {{form.phone_number.label_tag}} {% if form.phone_number.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    {% render_field form.phone_number class="form-control" placeholder=form.phone_number.label %}
+                                    {% if form.phone_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.phone_number.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.phone_number.help_text %}
+                                        <div class="form-text">{{ form.phone_number.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-md-6">
+                                    {{form.email.label_tag}} {% if form.email.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    {% render_field form.email class="form-control" placeholder=form.email.label %}
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.email.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.email.help_text %}
+                                        <div class="form-text">{{ form.email.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Website -->
+                                <div class="col-md-6">
+                                    {{form.website.label_tag}} {% if form.website.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    {% render_field form.website class="form-control" placeholder=form.website.label %}
+                                    {% if form.website.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.website.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.website.help_text %}
+                                        <div class="form-text">{{ form.website.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Address -->
+                                <div class="col-12">
+                                    {{form.address.label_tag}} {% if form.address.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    {% render_field form.address class="form-control" placeholder=form.address.label %}
+                                    {% if form.address.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.address.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.address.help_text %}
+                                        <div class="form-text">{{ form.address.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                <!-- Return Policy -->
+                                <div class="col-12">
+                                    {{form.return_policy.label_tag}} {% if form.return_policy.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    {% render_field form.return_policy class="form-control" placeholder=form.return_policy.label %}
+                                    {% if form.return_policy.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.return_policy.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.return_policy.help_text %}
+                                        <div class="form-text">{{ form.return_policy.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Shop Logo -->
+                                <div class="col-12">
+                                    {{form.shop_logo.label_tag}} {% if form.shop_logo.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    <div class="logo-upload-container">
+                                        {% if object.shop_logo %}
+                                            <div class="current-logo mb-2">
+                                                <img src="{{ object.shop_logo.url }}" 
+                                                     alt="Current shop logo" 
+                                                     class="img-thumbnail" 
+                                                     style="max-height: 100px;">
+                                            </div>
+                                        {% endif %}
+                                    {% render_field form.shop_logo class="form-control" placeholder=form.shop_logo.label %}
+                                        <div class="container logo-preview-container mt-2"></div>
+                                    </div>
+                                    {% if form.shop_logo.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.shop_logo.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        {% if form.shop_logo.help_text %}
+                                        {{form.shop_logo.help_text}}
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Employees -->
+                                <div class="col-12">
+                                    {{form.employees.label_tag}} {% if form.employees.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    {% render_field form.employees class="form-control" placeholder=form.employees.label %}
+                                    {% if form.employees.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.employees.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.employees.help_text %}
+                                        <div class="form-text">{{ form.employees.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Active Status -->
+                        <div class="col-12">
+                            {{form.is_active.label_tag}}
+                            {% render_field form.is_active class="form-check" %}
+                            {% if form.is_active.errors %}
+                                <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                    {{ form.is_active.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'myshop_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> {{ submit_text }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // Initialize Select2 for multiple select fields if available
+    $(document).ready(function() {
+        $('#id_employees').select2();
+    });
+</script>
+{% endblock %}

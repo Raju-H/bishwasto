@@ -1,0 +1,331 @@
+{% extends "base/_base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Form Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </nav>
+            <h2 class="display-6 mb-3">{{ title }}</h2>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Form -->
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Basic Information Section -->
+                        <div class="mb-4">
+                            <h5 class="card-title mb-3">Basic Information</h5>
+                            <div class="row g-3">
+
+                            
+                                <!-- Products category -->
+                                <div class="col">
+                                {{form.category.label_tag}} {% if form.category.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.category class="form-select" %}
+                                    {% if form.category.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.category.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.category.help_text %}
+                                        <div class="form-text">{{ form.category.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products sub category -->
+                                <div class="mb-3">
+                                {{form.sub_category.label_tag}} {% if form.sub_category.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.sub_category class="form-control htmx-target" %}
+                                    {% if form.sub_category.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.sub_category.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.sub_category.help_text %}
+                                        <div class="form-text">{{ form.sub_category.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products name -->
+                                <div class="mb-3">
+                                {{form.name.label_tag}} {% if form.name.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.name class="form-control" placeholder=form.name.label %}
+                                    {% if form.name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.name.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.name.help_text %}
+                                        <div class="form-text">{{ form.name.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products description -->
+                                <div class="mb-3">
+                                {{form.description.label_tag}} {% if form.description.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.description class="form-control" placeholder=form.description.label %}
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.description.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.description.help_text %}
+                                        <div class="form-text">{{ form.description.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products model -->
+                                <div class="mb-3">
+                                {{form.model.label_tag}} {% if form.model.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.model class="form-control" placeholder=form.model.label %}
+                                    {% if form.model.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.model.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.model.help_text %}
+                                        <div class="form-text">{{ form.model.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products sku -->
+                                <div class="mb-3">
+                                {{form.sku.label_tag}} {% if form.sku.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.sku class="form-control" placeholder=form.sku.label %}
+                                    {% if form.sku.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.sku.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.sku.help_text %}
+                                        <div class="form-text">{{ form.sku.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products isbn -->
+                                <div class="mb-3">
+                                {{form.isbn.label_tag}} {% if form.isbn.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.isbn class="form-control" placeholder=form.isbn.label %}
+                                    {% if form.isbn.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.isbn.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.isbn.help_text %}
+                                        <div class="form-text">{{ form.isbn.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products variant -->
+                                <div class="mb-3">
+                                {{form.variant.label_tag}} {% if form.variant.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.variant class="form-control" placeholder=form.variant.label %}
+                                    {% if form.variant.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.variant.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.variant.help_text %}
+                                        <div class="form-text">{{ form.variant.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products is expirable -->
+                                <div class="mb-3">
+                                {{form.is_expirable.label_tag}}
+                                {% render_field form.is_expirable class="form-check" %}
+                                </div>
+
+                                <!-- Products expiry date -->
+                                <div class="mb-3">
+                                {{form.expiry_date.label_tag}}
+                                {% render_field form.expiry_date class="form-control" type="date" %}
+                                </div>
+
+                                <!-- Products weight unit -->
+                                <div class="mb-3">
+                                {{form.weight_unit.label_tag}} {% if form.weight_unit.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.weight_unit class="form-select" placeholder=form.weight_unit.label %}
+                                    {% if form.weight_unit.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.weight_unit.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.weight_unit.help_text %}
+                                        <div class="form-text">{{ form.weight_unit.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products weight -->
+                                <div class="mb-3">
+                                {{form.weight.label_tag}} {% if form.weight.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.weight class="form-control" placeholder=form.weight.label %}
+                                    {% if form.weight.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.weight.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.weight.help_text %}
+                                        <div class="form-text">{{ form.weight.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products length unit -->
+                                <div class="mb-3">
+                                {{form.length_unit.label_tag}} {% if form.length_unit.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.length_unit class="form-select" placeholder=form.length_unit.label %}
+                                    {% if form.length_unit.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.length_unit.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.length_unit.help_text %}
+                                        <div class="form-text">{{ form.length_unit.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products length -->
+                                <div class="mb-3">
+                                {{form.length.label_tag}} {% if form.length.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.length class="form-control" placeholder=form.length.label %}
+                                    {% if form.length.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.length.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.length.help_text %}
+                                        <div class="form-text">{{ form.length.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products width -->
+                                <div class="mb-3">
+                                {{form.width.label_tag}} {% if form.width.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.width class="form-control" placeholder=form.width.label %}
+                                    {% if form.width.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.width.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.width.help_text %}
+                                        <div class="form-text">{{ form.width.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products height -->
+                                <div class="mb-3">
+                                {{form.height.label_tag}} {% if form.height.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {% render_field form.height class="form-control" placeholder=form.height.label %}
+                                    {% if form.height.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.height.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.height.help_text %}
+                                        <div class="form-text">{{ form.height.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products avatar -->
+                                <div class="mb-3">
+                                {{form.avatar.label_tag}} {% if form.avatar.field.required %}<span class="text-danger">*</span>{% endif %}
+
+                                {% if object.avatar %}
+                                            <div class="current-logo mb-2">
+                                                <img src="{{ object.avatar.url }}" 
+                                                     alt="Current avatar" 
+                                                     class="img-thumbnail" 
+                                                     style="max-height: 100px;">
+                                            </div>
+                                        {% endif %}
+
+
+                                {% render_field form.avatar class="form-control" placeholder=form.avatar.label %}
+                                    {% if form.avatar.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            {{ form.avatar.errors|join:", " }}
+                                        </div>
+                                    {% endif %}
+                                    {% if form.avatar.help_text %}
+                                        <div class="form-text">{{ form.avatar.help_text }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Products is active -->
+                                <div class="mb-3">
+                                {{form.is_active.label_tag}}
+                                {% render_field form.is_active class="form-check" %}
+                                </div>
+                                
+
+                            </div>
+                        </div>
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> {{ submit_text }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // Initialize Select2 for multiple select fields if available
+    $(document).ready(function() {
+        $('#id_category').select2();
+        $('#id_sub_category').select2();
+    });
+</script>
+{% endblock %}
+
