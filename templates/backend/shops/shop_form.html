@@ -1,13 +1,13 @@
-{% extends "base/_base.html" %}
+{% extends "backend/dashboard.html" %}
 {% load widget_tweaks %}
 
 {% block title %}{{title}}{% endblock %}
 
-{% block content %}
+{% block db_content %}
 <div class="container py-4">
     <!-- Form Header -->
     <div class="row mb-4">
-        <div class="col-lg-8 mx-auto">
+        <div class="col-10 mx-auto">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'shop_list' %}">Shops</a></li>
@@ -20,7 +20,7 @@
 
     <!-- Main Form -->
     <div class="row">
-        <div class="col-lg-8 mx-auto">
+        <div class="col-10 mx-auto">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <!-- Messages -->

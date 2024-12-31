@@ -1,379 +1,109 @@
-{% extends "base/_base.html" %}
-{% load static %}
-{% load widget_tweaks %}
+{% extends "backend/base_dashboard.html" %}
 
+{% block db_content %}
+<!-- Main Content -->
+<main class="col">
 
-{% block title %}Dashboard{% endblock %}
-
-
-{% block content %}
-
-
-
-<div class="container mt-3">
-
-    <div class="wrapper">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <h2>Dashboard</h2>
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Sales</h5>
+                    <h3 class="card-text">৳1,250</h3>
+                    <p class="text-success"><i class="bi bi-arrow-up"></i> 3.5%</p>
+                </div>
             </div>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
-                    href="{% url 'dashboard' %}">
-                    <i class="bi bi-speedometer2 me-2"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.url_name == 'myshop_list' %}active{% endif %}" 
-                    href="{% url "myshop_list" %}">
-                        <i class="bi bi-shop"></i>
-                        <span>Shops</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link " 
-                    href="">
-                        <i class="bi bi-cash"></i>
-                        <span>Salaries</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="">
-                        <i class="bi bi-people-fill"></i>
-                        <span>Employee</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
-                        <i class="bi bi-cart me-2"></i>
-                        POS
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-box me-2"></i>
-                        Products
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-people me-2"></i>
-                        Customers
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-credit-card me-2"></i>
-                        Subscriptions
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-calendar"></i>
-                        <span>Events</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-info-circle"></i>
-                        <span>About</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-gear"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <header class="dashboard-header">
-                <h1>Welcome to The Accounts Dashboard</h1>
-                {% if user.is_authenticated %}
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-logout fw-bold">
-                        <i class="bi bi-box-arrow-right"></i> Logout
-                    </button>
-                </form>
-                {% endif %}
-            </header>
-
-            <div class="content-wrapper p-0">
-                {% block db_content %}
-                
-                {% endblock %}
-
-                <!-- Main Content -->
-                <main class="col">
-
-                    <!-- Stats Cards -->
-                    <div class="row g-3 mb-2">
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Today's Sales</h5>
-                                    <h3 class="card-text">৳1,250</h3>
-                                    <p class="text-success"><i class="bi bi-arrow-up"></i> 3.5%</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Active Subscriptions</h5>
-                                    <h3 class="card-text">125</h3>
-                                    <p class="text-primary">Premium: 85</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Products</h5>
-                                    <h3 class="card-text">1,840</h3>
-                                    <p class="text-info">Active: 1,520</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">Low Stock Alert</h5>
-                                    <h3 class="card-text">24</h3>
-                                    <p class="text-danger">Critical: 8</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charts Row -->
-                    <div class="row mb-4">
-                        <div class="col-8">
-                            <div class="card">
-                                <div class="card-header">
-                                    Sales Overview
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="salesChart" height="300"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="card">
-                                <div class="card-header">
-                                    Top Products
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="productsChart" height="300"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Transactions Table -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            Recent Transactions
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Products</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>#ORD-2024</td>
-                                            <td>John Doe</td>
-                                            <td>3 items</td>
-                                            <td>৳145.00</td>
-                                            <td><span class="badge bg-success">Completed</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>#ORD-2023</td>
-                                            <td>Jane Smith</td>
-                                            <td>1 item</td>
-                                            <td>৳75.00</td>
-                                            <td><span class="badge bg-warning">Pending</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </main>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Active Subscriptions</h5>
+                    <h3 class="card-text">125</h3>
+                    <p class="text-primary">Premium: 85</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Products</h5>
+                    <h3 class="card-text">1,840</h3>
+                    <p class="text-info">Active: 1,520</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Low Stock Alert</h5>
+                    <h3 class="card-text">24</h3>
+                    <p class="text-danger">Critical: 8</p>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header">
+                    Sales Overview
+                </div>
+                <div class="card-body">
+                    <canvas id="salesChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">
+                    Top Products
+                </div>
+                <div class="card-body">
+                    <canvas id="productsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <style>
-    :root {
-        --sidebar-width: 250px;
-        --primary-color: #2c3e50;
-        --accent-color: #04AA6D;
-        --hover-color: #16a085;
-        --text-color: #ecf0f1;
-        --transition-speed: 0.3s;
-    }
-
-    .wrapper {
-        display: flex;
-        min-height: 100vh;
-    }
-
-    .sidebar {
-        width: var(--sidebar-width);
-        background: var(--primary-color);
-        color: var(--text-color);
-        transition: all var(--transition-speed);
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .sidebar-header {
-        padding: 1.5rem;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar .nav-item {
-        margin: 0.5rem 0;
-    }
-
-    .sidebar .nav-link {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 1.5rem;
-        color: var(--text-color);
-        transition: all var(--transition-speed);
-    }
-
-    .sidebar .nav-link i {
-        width: 20px;
-        margin-right: 10px;
-    }
-
-    .sidebar .nav-link:hover {
-        background-color: var(--hover-color);
-        transform: translateX(5px);
-    }
-
-    .sidebar .nav-link.active {
-        background-color: var(--accent-color);
-        font-weight: bold;
-    }
-
-    .main-content {
-        flex: 1;
-        padding: 2rem;
-        background: #f8f9fa;
-    }
-
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid #eee;
-    }
-
-    .btn-logout {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
-        padding: 0.5rem 1.5rem;
-        border-radius: 5px;
-        transition: background-color var(--transition-speed);
-    }
-
-    .btn-logout:hover {
-        background-color: #c0392b;
-    }
-
-    .content-wrapper {
-        background: white;
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    </style>
-
-</div>
-
-
-{% endblock %}
-
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-// Initialize Charts
-document.addEventListener('DOMContentLoaded', function() {
-    // Sales Chart
-    const salesCtx = document.getElementById('salesChart').getContext('2d');
-    new Chart(salesCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [{
-                label: 'Sales',
-                data: [1200, 1900, 1500, 2100, 1800, 2500],
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-
-    // Products Chart
-    const productsCtx = document.getElementById('productsChart').getContext('2d');
-    new Chart(productsCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Electronics', 'Clothing', 'Food', 'Books'],
-            datasets: [{
-                data: [30, 25, 25, 20],
-                backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)',
-                    'rgb(75, 192, 192)'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-});
-
-// Shop Selector Event Handler
-document.getElementById('shopSelector').addEventListener('change', function(e) {
-    // Handle shop change - update dashboard data
-    console.log('Selected shop:', e.target.value);
-    // Add your shop-specific data update logic here
-});
-</script>
-
-
-
+    <!-- Recent Transactions Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Recent Transactions
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Products</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#ORD-2024</td>
+                            <td>John Doe</td>
+                            <td>3 items</td>
+                            <td>৳145.00</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>#ORD-2023</td>
+                            <td>Jane Smith</td>
+                            <td>1 item</td>
+                            <td>৳75.00</td>
+                            <td><span class="badge bg-warning">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}
