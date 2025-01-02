@@ -11,7 +11,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.contrib import messages
 import qrcode
-from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont 
 
 
 
@@ -318,6 +318,9 @@ class ProductListView(LoginRequiredMixin, ListView):
 
 
 
+
+
+
 class ShopProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ShopProduct
     fields = [
@@ -348,12 +351,39 @@ class ShopProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView)
                 qr.add_data(qr_data)
                 qr.make(fit=True)
                 img = qr.make_image(fill_color="black", back_color="white")
+
+                # Convert to PIL Image for drawing text
+                img = img.convert("RGB")
+                draw = ImageDraw.Draw(img)
+
+                # Define font and size (you may need to adjust the path to a valid font file)
+                font_size = 20
+                try:
+                    font = ImageFont.truetype("arial.ttf", font_size)  # Use a TrueType font
+                except IOError:
+                    font = ImageFont.load_default()  # Fallback to default font if arial.ttf is not available
+
+                # Prepare text to draw (retail price)
+                retail_price_text = f"Retail Price: {self.object.retail_price}TK"
                 
+                # Calculate text bounding box and position
+                bbox = draw.textbbox((0, 0), retail_price_text, font=font)
+                text_width = bbox[2] - bbox[0]  # width of the text box
+                text_height = bbox[3] - bbox[1]  # height of the text box
+                
+                width, height = img.size
+                text_x = (width - text_width) / 2  # Center horizontally
+                text_y = height - text_height - 10  # Position above the bottom edge
+
+                # Draw text on the image
+                draw.text((text_x, text_y), retail_price_text, fill="black", font=font)
+
                 # Save QR code image to a BytesIO buffer
                 buffer = BytesIO()
-                img.save(buffer)
+                img.save(buffer, format='PNG')
                 qr_code_data = buffer.getvalue()
                 buffer.close()
+                
                 self.object.qrcode.save(f"{self.object.product.slug}.png", ContentFile(qr_code_data))
 
             # Set created_by field to current user
@@ -366,14 +396,13 @@ class ShopProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView)
             messages.error(self.request, f"Error saving product: {str(e)}")
             return super().form_invalid(form)
 
-
-
     def get_context_data(self, **kwargs):
         """Add additional context for the template."""
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add Product to Shop'
         context['submit_text'] = 'Add Product to Shop'
         return context
+
 
 
 
@@ -417,7 +446,7 @@ class ShopProductListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = ShopProduct.objects.all()
+        queryset = ShopProduct.objects.all().order_by('-created_at')
     
         # Search functionality
         search = self.request.GET.get('search', '').strip()

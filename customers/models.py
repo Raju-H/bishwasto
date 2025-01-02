@@ -1,8 +1,9 @@
 from django.db import models
 from django.conf import settings
+from accounts.models import BaseModel
 
 
-class Customer(models.Model):
+class Customer(BaseModel):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -21,6 +22,6 @@ class Customer(models.Model):
     def to_select2(self):
         item = {
             'label': self.get_ful_name(),
-            'value': self.user.id
+            'value': self.id
         }
         return item

@@ -4,7 +4,7 @@ from .models import Sales, SalesItems
 class SalesItemsInline(admin.TabularInline):
     model = SalesItems
     extra = 1
-    fields = ['product', 'sale_price', 'profit_in_percentage', 'discount_in_percentage', 'quantity']
+    fields = ['product', 'sale_price', 'profit_in_percentage', 'discount_in_percentage', 'quantity', 'total_price']
 
 
 @admin.register(Sales)

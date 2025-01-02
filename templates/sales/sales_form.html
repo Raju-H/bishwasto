@@ -49,6 +49,7 @@
                                                     <th>Quantity</th>
                                                     <th>Disc %</th>
                                                     <th>Profit %</th>
+                                                    <th>Tax</th>
                                                     <th>Total</th>
                                                     <th class="text-center">Delete</th>
                                                     </tr>
@@ -72,108 +73,58 @@
 
                                     <!-- Customer -->
                                     <div class="mb-2">
-                                        {{form.customer.label_tag}} {% if form.customer.field.required %}<span class="text-danger">*</span>{% endif %}
-                                        {% render_field form.customer class="form-select" placeholder=form.customer.label %}
-                                        {% if form.customer.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.customer.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.customer.help_text %}
-                                            <div class="form-text">{{ form.customer.help_text }}</div>
-                                        {% endif %}
+                                        <label for="customer">Customer</label>
+                                        <select name="customer" class="form-control" id="searchbox_customers" required>
+                                            {% for customer in customers %}
+                                            <option value="{{customer.value}}">{{customer.label}}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
 
                                     <!-- Payment Methood -->
                                     <div class="mb-2">
-                                        {{form.payment_method.label_tag}} {% if form.payment_method.field.required %}<span class="text-danger">*</span>{% endif %}
-                                        {% render_field form.payment_method class="form-select" placeholder=form.payment_method.label %}
-                                        {% if form.payment_method.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.payment_method.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.payment_method.help_text %}
-                                            <div class="form-text">{{ form.payment_method.help_text }}</div>
-                                        {% endif %}
+                                        <label for="payment_method">Payment Methood</label>
+                                        <select name="payment_method" id="id_payment_method" class="form-select">
+                                            <option value="CASH">Cash</option>
+                                            <option value="CARD">Card</option>
+                                            <option value="BKASH">Bkash</option>
+                                            <option value="ROCKET">Rocket</option>
+                                            <option value="NOGOD">Nogod</option>
+                                            <option value="BANK">Bank</option>
+                                            <option value="CHECK">Check</option>
+                                            <option value="DUE">Due</option>
+                                        </select>
                                     </div>
 
                                     <!-- Sub Total -->
                                     <div class="mb-2">
-                                        {{form.sub_total.label_tag}}
-                                        {% render_field form.sub_total class="form-control" readonly="readonly" %}
-                                        {% if form.sub_total.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.sub_total.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.sub_total.help_text %}
-                                            <div class="form-text">{{ form.sub_total.help_text }}</div>
-                                        {% endif %}
+                                        <label for="sub_total">Sub Total:</label>
+                                        <span id="id_sub_total"></span>
                                     </div>
 
                                     <!-- Grand Total -->
                                     <div class="mb-2">
-                                        {{form.grand_total.label_tag}}
-                                        {% render_field form.grand_total class="form-control" readonly="readonly" %}
-                                        {% if form.grand_total.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.grand_total.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.grand_total.help_text %}
-                                            <div class="form-text">{{ form.grand_total.help_text }}</div>
-                                        {% endif %}
+                                        <label for="grand_total">Grand Total: </label>
+                                        <span id="id_grand_total"></span>
                                     </div>
 
                                     <!-- Amount Payed -->
                                     <div class="mb-2">
-                                        {{form.amount_payed.label_tag}} {% if form.amount_payed.field.required %}<span class="text-danger">*</span>{% endif %}
-                                        {% render_field form.amount_payed class="form-control" placeholder=form.amount_payed.label %}
-                                        {% if form.amount_payed.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.amount_payed.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.amount_payed.help_text %}
-                                            <div class="form-text">{{ form.amount_payed.help_text }}</div>
-                                        {% endif %}
+                                        <label for="amount_payed">Amount Payed <span class="text-danger">*</span></label>
+                                        <input type="number" name="amount_payed" id="id_amount_payed" class="form-control" min="0" required>
                                     </div>
 
                                     <!-- Amount Change -->
                                     <div class="mb-2">
-                                        {{form.amount_change.label_tag}}
-                                        {% render_field form.amount_change class="form-control" readonly="readonly" %}
-                                        {% if form.amount_change.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.amount_change.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.amount_change.help_text %}
-                                            <div class="form-text">{{ form.amount_change.help_text }}</div>
-                                        {% endif %}
+                                        <label for="amount_change">Amount Change: </label>
+                                        <span id="id_amount_change"></span>
                                     </div>
 
 
                                     <!-- Notes -->
                                     <div class="mb-2">
-                                        {{form.notes.label_tag}}
-                                        {% render_field form.notes class="form-control" placeholder=form.notes.label rows='2' %}
-                                        {% if form.notes.errors %}
-                                            <div class="invalid-feedback d-block">
-                                                <i class="bi bi-exclamation-triangle-fill"></i>
-                                                {{ form.notes.errors|join:", " }}
-                                            </div>
-                                        {% endif %}
-                                        {% if form.notes.help_text %}
-                                            <div class="form-text">{{ form.notes.help_text }}</div>
-                                        {% endif %}
+                                        <label for="notes">Notes:</label>
+                                        <textarea name="notes" id="id_notes" class="form-control" rows="2"></textarea>
                                     </div>
 
                                     <div class="mb-2 text-right float-end">
@@ -212,13 +163,13 @@
 <script>
     $(document).ready(function() {
         let productCount = 0; // To keep track of product rows
-    
+
         // Function to round numbers to a specified number of decimal places
         function roundTo(n, digits = 2) {
             const multiplicator = Math.pow(10, digits);
             return Math.round(parseFloat((n * multiplicator).toFixed(11))) / multiplicator;
         }
-    
+        
         // Function to add or update a product in the table
         function addProductToTable(product) {
             const existingRow = $(`#products-tbody tr[data-id="${product.id}"]`);
@@ -232,13 +183,14 @@
                 // Product does not exist, create a new row
                 productCount++;
                 const row = `
-                    <tr id="product-row-${productCount}" data-id="${product.id}" data-buying-price="${parseFloat(product.buying_price)}">
+                    <tr id="product-row-${productCount}" data-id="${product.id}" data-buying-price="${parseFloat(product.buying_price)}" data-default-tax-rate="${parseFloat(product.default_tax_rate).toFixed(2)}">
                         <td>${productCount}</td>
                         <td>${product.name}</td>
                         <td class="unit-price">${parseFloat(product.retail_price).toFixed(2)}</td>
                         <td><input type="number" class="form-control quantity" value="1" min="1" data-price="${parseFloat(product.retail_price)}" data-id="${product.id}"></td>
                         <td><input type="number" class="form-control discount-percentage" value="0" min="0" max="100"></td>
                         <td><input type="number" class="form-control profit-percentage" value="0" min="0" max="100"></td>
+                        <td class="default-tax-rate">${parseFloat(product.default_tax_rate).toFixed(2)}%</td>
                         <td class="total-price">${parseFloat(product.retail_price).toFixed(2)}</td>
                         <td class="text-center"><button type="button" class="btn btn-danger delete-product" data-id="${product.id}"><i class="bi bi-trash3-fill"></i></button></td>
                     </tr>`;
@@ -247,91 +199,80 @@
             
             updateTotal(); // Update total after adding/updating the product
         }
-    
-            // Function to update total prices
-            function updateTotal() {
-                let subtotal = 0;
-                let totalTax = 0;
-            
-                $('#products-tbody tr').each(function () {
-                    const quantity = parseInt($(this).find('.quantity').val());
-                    const retailPrice = parseFloat($(this).find('.unit-price').text());
-                    const buyingPrice = parseFloat($(this).data('buying-price')) || 0;
-                    const discountPercentage = parseFloat($(this).find('.discount-percentage').val()) || 0;
-                    const profitPercentage = parseFloat($(this).find('.profit-percentage').val()) || 0;
-                    const defaultTaxRate = parseFloat($(this).data('default-tax-rate')) || 0;
-            
-                    // Default to retail price
-                    let salePrice = retailPrice;
-            
-                    // Override sale price if profit percentage is entered
-                    if (profitPercentage > 0) {
-                        salePrice = buyingPrice + (buyingPrice * (profitPercentage / 100));
-                    }
-            
-                    // Apply discount percentage
-                    if (discountPercentage > 0) {
-                        salePrice -= (salePrice * (discountPercentage / 100));
-                    }
-            
-                    // Calculate item subtotal
-                    const itemSubtotal = roundTo(quantity * salePrice, 2);
-                    subtotal += itemSubtotal;
-            
-                    // Calculate tax for this item
-                    let taxRate = defaultTaxRate > 0 ? defaultTaxRate : (parseFloat($('#id_tax_in_percentage').val()) || 0);
-                    if (taxRate > 0) {
-                        const itemTax = roundTo(itemSubtotal * (taxRate / 100), 2);
-                        totalTax += itemTax;
-                    }
-            
-                    // Update the row's total price
-                    $(this).find('.total-price').text(roundTo(itemSubtotal, 2).toFixed(2));
-                });
-            
-                // Update subtotal and grand total fields
-                $('#id_sub_total').val(roundTo(subtotal, 2).toFixed(2));
-                const grandTotal = roundTo(subtotal + totalTax, 2);
-                $('#id_grand_total').val(grandTotal.toFixed(2));
-            
-                updateAmountChange();
-            }
-            
-
-            // Attach change events to dynamically update totals
-            $(document).on('input change', '.quantity, .discount-percentage, .profit-percentage', function() {
-                updateTotal();
+        
+        // Function to update total prices
+        function updateTotal() {
+            let subtotal = 0;
+            let totalTax = 0;
+        
+            $('#products-tbody tr').each(function () {
+                const quantity = parseInt($(this).find('.quantity').val());
+                const retailPrice = parseFloat($(this).find('.unit-price').text());
+                const buyingPrice = parseFloat($(this).data('buying-price')) || 0;
+                const discountPercentage = parseFloat($(this).find('.discount-percentage').val()) || 0;
+                const profitPercentage = parseFloat($(this).find('.profit-percentage').val()) || 0;
+                const defaultTaxRate = parseFloat($(this).data('default-tax-rate')) || 0;
+        
+                // Default to retail price
+                let salePrice = retailPrice;
+        
+                // Override sale price if profit percentage is entered
+                if (profitPercentage > 0) {
+                    salePrice = buyingPrice + (buyingPrice * (profitPercentage / 100));
+                }
+        
+                // Apply discount percentage
+                if (discountPercentage > 0) {
+                    salePrice -= (salePrice * (discountPercentage / 100));
+                }
+        
+                // Calculate item subtotal
+                const itemSubtotal = roundTo(quantity * salePrice, 2);
+                subtotal += itemSubtotal;
+        
+                // Calculate tax for this item
+                let taxRate = defaultTaxRate > 0 ? defaultTaxRate : (parseFloat($('#id_tax_in_percentage').val()) || 0);
+                if (taxRate > 0) {
+                    const itemTax = roundTo(itemSubtotal * (taxRate / 100), 2);
+                    totalTax += itemTax;
+                }
+        
+                // Update the row's total price
+                $(this).find('.total-price').text(roundTo(itemSubtotal, 2).toFixed(2));
             });
-
-            // Update amount change when the amount paid changes
-            $(document).on('input', '#id_amount_payed', function() {
-                updateAmountChange();
-            });
-
-
+        
+            // Update subtotal and grand total fields
+            $('#id_sub_total').text(roundTo(subtotal, 2).toFixed(2)); // Changed from val() to text() for span elements
+            const grandTotal = roundTo(subtotal + totalTax, 2);
+            $('#id_grand_total').text(grandTotal.toFixed(2)); // Changed from val() to text() for span elements
+        
+            updateAmountChange();
+        }
+        
+        // Attach change events to dynamically update totals
+        $(document).on('input change', '.quantity, .discount-percentage, .profit-percentage', function() {
+            updateTotal();
+        });
+        
+        // Update amount change when the amount paid changes
+        $(document).on('input', '#id_amount_payed', function() {
+            updateAmountChange();
+        });
+        
         // Function to update amount change
         function updateAmountChange() {
-            const grandTotal = parseFloat($('#id_grand_total').val()) || 0; // Get grand total
+            const grandTotal = parseFloat($('#id_grand_total').text()) || 0; // Changed from val() to text()
             const amountPaid = parseFloat($('#id_amount_payed').val()) || 0; // Get amount paid
             const amountChange = roundTo(amountPaid - grandTotal, 2); // Calculate amount change
-            $('#id_amount_change').val(amountChange.toFixed(2)); // Update amount change field
+            $('#id_amount_change').text(amountChange.toFixed(2)); // Changed from val() to text()
         }
-
-    
-        $(document).on('change', '.quantity', function() {
-            updateTotal();
-        });
-    
+        
+        // Event handler for deleting a product row
         $(document).on('click', '.delete-product', function() {
-            const rowId = $(this).closest('tr').attr('id');
-            $('#' + rowId).remove();
+            $(this).closest('tr').remove();
             updateTotal();
         });
-    
-        // Event handler for amount paid input
-        $(document).on('input', '#id_amount_payed', function() {
-            updateAmountChange(); // Call to update amount change when amount paid changes
-        });
+        
 
 
 
@@ -341,7 +282,7 @@
         
     
         // Initialize Select2 for customer selection
-        $('#id_customer').select2({
+        $('#searchbox_customers').select2({
             placeholder: "Select a customer",
             allowClear: true,
         });
@@ -415,68 +356,90 @@
         }
 
 
-        // Send the Sales & SalesItems data via AJAX
+        // Sale Form Submission
         $('.saleForm').on('submit', function(e) {
-            // Prevent default form submission
             e.preventDefault();
 
-            // Check if there are any products in the table
+            // Check if there are products in the table
             const productRows = $('#products-tbody tr');
             if (productRows.length === 0) {
                 alert("Error: Please add at least one product to the sale.");
-                return; // Stop form submission
+                return;
             }
 
-            // Gather data from the form and product table
+            // Prepare sale data
             const saleData = {
-                customer: $('#id_customer').val(),
+                customer: $('#searchbox_customers').val(),
                 payment_method: $('#id_payment_method').val(),
-                sub_total: $('#id_sub_total').val(),
-                grand_total: $('#id_grand_total').val(),
+                sub_total: $('#id_sub_total').text(),
+                grand_total: $('#id_grand_total').text(),
                 amount_payed: $('#id_amount_payed').val(),
-                amount_change: $('#id_amount_change').val(),
+                amount_change: $('#id_amount_change').text(),
                 notes: $('#id_notes').val(),
-                items: [] // Array to hold sale items
+                items: [] // Collect sale items
             };
+            console.log(saleData);
 
-            // Loop through each product row and collect data
+            // Collect product data
             productRows.each(function() {
                 const row = $(this);
                 const productId = row.data('id');
                 const quantity = parseInt(row.find('.quantity').val()) || 0;
-                const buyingPrice = parseFloat($(this).data('buying-price')) || 0;
+                const buyingPrice = parseFloat(row.data('buying-price')) || 0;
                 let retailPrice = parseFloat(row.find('.unit-price').text()) || 0;
                 const discountPercentage = parseFloat(row.find('.discount-percentage').val()) || 0;
                 const profitPercentage = parseFloat(row.find('.profit-percentage').val()) || 0;
                 const totalPrice = parseFloat(row.find('.total-price').text()) || 0;
 
-                // Override retail price if profit percentage is entered
+                // Adjust retail price if profit percentage is provided
                 if (profitPercentage > 0) {
                     retailPrice = buyingPrice + (buyingPrice * (profitPercentage / 100));
                 }
 
+                // Ensure valid quantity
+                if (quantity > 0) {
+                    saleData.items.push({
+                        product_id: productId,
+                        quantity: quantity,
+                        retail_price: retailPrice.toFixed(2),
+                        discount_percentage: discountPercentage.toFixed(2),
+                        profit_percentage: profitPercentage.toFixed(2),
+                        total_price: totalPrice.toFixed(2)
+                    });
+                }
 
-                // Add the collected data to saleData.items
-                saleData.items.push({
-                    product_id: productId,
-                    quantity: quantity,
-                    retail_price: retailPrice.toFixed(2),
-                    discount_percentage: discountPercentage.toFixed(2),
-                    profit_percentage: profitPercentage.toFixed(2),
-                    total_price: totalPrice.toFixed(2) // Already calculated dynamically
-                });
+                console.log(saleData.items);
             });
 
-            // Print collected data to the console
-            console.log("Sale Data:", saleData);
+            if (saleData.items.length === 0) {
+                alert("Error: No valid products in the sale.");
+                return;
+            }
+
+            // Send sale data via AJAX
+            $.ajax({
+                url: "{% url 'sales_create' %}",
+                type: 'POST',
+                data: JSON.stringify(saleData),
+                contentType: 'application/json',
+                headers: {
+                    "X-CSRFToken": $("input[name=csrfmiddlewaretoken]").val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert("Sale created successfully!");
+                        window.location.href = "{% url 'sales_list' %}";
+                    } else {
+                        alert("Error: " + (response.message || "Something went wrong."));
+                    }
+                },
+                error: function(xhr) {
+                    console.error("AJAX Error:", xhr.responseText);
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+            
         });
-
-        
-
-
-
-
-
     });
     </script>
     

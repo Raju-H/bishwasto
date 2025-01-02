@@ -1,15 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic import CreateView, UpdateView, ListView
+from django.views.generic import ListView
 from products.models import *
 from .models import *
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import logging
 from customers.models import *
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-from .forms import SalesForm 
 import json
 
 
@@ -31,52 +29,65 @@ def is_ajax(request):
     return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 
-
-
-
 @login_required
 def sales_create_view(request):
-    form = SalesForm()
-
     if request.method == 'POST':
         if is_ajax(request=request):
-            data = json.load(request)
+            data = json.loads(request.body)
 
-            sale_attributes = {
-                'customer': data.get('customer'),
-                'quantity': data.get('quantity'),
-                'discount': data.get('discount'),
+            # Fetch customer instance based on provided ID
+            customer_id = data.get('customer')
+            customer = get_object_or_404(Customer, id=customer_id)
+
+            # Prepare sale data
+            sale_data = {
+                'customer': customer,
+                'employee': request.user,
                 'payment_method': data.get('payment_method'),
-                'payment_status': data.get('payment_status'),
-                'note': data.get('note'),
-                'created_by': request.user
+                'sub_total': data.get('sub_total'),
+                'grand_total': data.get('grand_total'),
+                'amount_payed': data.get('amount_payed'),
+                'amount_change': data.get('amount_change'),
+                'notes': data.get('notes'),
             }
 
-            form = SalesForm(data)
-            
-            if form.is_valid():
-                try:
-                    sale = form.save(commit=False)
-                    sale.created_by = request.user
-                    sale.save()
+            try:
+                sale = Sales.objects.create(**sale_data)
 
-                    messages.success(request, "Sale created successfully!")
-                    return JsonResponse({'success': True, 'invoice_number': sale.invoice_number})
-                except Exception as e:
-                    messages.error(request, str(e))
-                    return JsonResponse({'success': False, 'error': str(e)}, status=400)
-            else:
-                # Return validation errors as JSON response
-                errors = {field: form.errors[field].tolist() for field in form.errors}
-                return JsonResponse({'success': False, 'errors': errors}, status=400)
+                # Extract and validate sale items data
+                sale_items_data = data.get('items', [])
+                formatted_items = []
 
-    context = {
-        'title': 'Create New Sales',
+                for item in sale_items_data:
+                    product_id = item.get('product_id')
+
+                    # Fetch the ShopProduct instance using the product_id
+                    product = get_object_or_404(ShopProduct, id=product_id)
+
+                    formatted_item = {
+                        'sales': sale,
+                        'product': product,
+                        'quantity': item.get('quantity'),
+                        'sale_price': item.get('retail_price'),
+                        'discount_in_percentage': item.get('discount_percentage'),
+                        'profit_in_percentage': item.get('profit_percentage'),
+                        'total_price': item.get('total_price')
+                    }
+                    formatted_items.append(SalesItems(**formatted_item))
+
+                    # Use bulk_create for efficiency
+                    SalesItems.objects.bulk_create(formatted_items)
+                return JsonResponse({'success': True, 'message': 'Sale created successfully!'}, status=201)
+
+            except Exception as e:
+                logger.error(f"Error creating sale: {str(e)}")
+                return JsonResponse({'error': str(e)}, status=500)
+
+    return render(request, 'sales/sales_form.html', {
+        'customers': [c.to_select2() for c in Customer.objects.all()],
+        'title': 'Create New Sale',
         'submit_text': 'Complete',
-        'form': form,
-    }
-
-    return render(request, 'sales/sales_form.html', context)
+    })
 
 
 
